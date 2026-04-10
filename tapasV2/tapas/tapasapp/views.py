@@ -4,9 +4,11 @@ from .models import Dish
 # Create your views here.
 
 
-def better_menu(request):
-    dish_objects = Dish.objects.all()
-    return render(request, 'tapasapp/better_list.html', {'dishes':dish_objects})
+def manage_account(request):
+    return render(request, 'tapasapp/basic_list.html')
+
+def logout_view(request): 
+    logout(request)
 
 def add_menu(request):
     if(request.method=="POST"):
