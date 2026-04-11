@@ -6,11 +6,7 @@ from .models import Dish
 
 def manage_account(request, pk):
     user=get_object_or_404(User, pk=pk)
-<<<<<<< HEAD
-    return render(request, 'manage.account.html', {'user_obj': user})
-=======
     return render(request, 'manage_account.html', {'user_obj': user})
->>>>>>> e84a9ba7db0456d2463e4797ce5b318174788f88
                                                    
 def change_password(request, pk):
     user=get_object_or_404(User, pk=pk)
