@@ -1,0 +1,11 @@
+{% extends 'tapasapp/base.html' %}
+{% load static %}
+
+                {% block content %}
+                    <h2> Account Settings </h2>
+                    <p> Username: {{ user_obj.username }} </p>
+                
+                    <a href="{% url 'change_password' pk=user_obj.pk %}" class="btn btn-warning">
+                    Change Password
+                    </a>
+                {% endblock %}

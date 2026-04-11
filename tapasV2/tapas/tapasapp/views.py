@@ -1,11 +1,33 @@
-from django.shortcuts import render, redirect, get_object_or_404, import logout 
+from django.shortcuts import render, redirect, get_object_or_404, import logout import User
 from .models import Dish 
 
 # Create your views here.
 
 
-def manage_account(request):
-    return render(request, 'tapasapp/basic_list.html')
+def manage_account(request, pk):
+    user=get_object_or_404(User, pk=pk)
+    return render(request, 'manage.account.html', {user_obj': user})
+                                                   
+def change_password(request, pk):
+    user=get_object_or_404(User, pk=pk)
+
+    if request.method == 'POST': 
+        new_password = request.POST.get('password')
+        user.set_password(new_password)
+        user.save()
+        return redirect('login')
+    
+    return render(request, 'change_password.html', {user_obj': user})
+
+def delete_account(request, pk):
+    user=get_object_or_404(User, pk=pk)
+
+    if request.method == 'POST': 
+        user.delete()
+        logout(request)
+        return redirect('login')
+    
+    return render(request, 'delete_account.html', {user_obj': user})
 
 def logout_view(request): 
     logout(request)
