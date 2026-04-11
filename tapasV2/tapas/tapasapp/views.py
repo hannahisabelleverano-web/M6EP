@@ -16,7 +16,7 @@ def change_password(request, pk):
         user.save()
         return redirect('login')
     
-    return render(request, 'change_password.html', {user_obj': user})
+    return render(request, 'change_password.html', {'user_obj': user})
 
 def delete_account(request, pk):
     user=get_object_or_404(User, pk=pk)
@@ -26,7 +26,7 @@ def delete_account(request, pk):
         logout(request)
         return redirect('login')
     
-    return render(request, 'delete_account.html', {user_obj': user})
+    return render(request, 'delete_account.html', {'user_obj': user})
 
 def logout_view(request): 
     logout(request)
