@@ -7,24 +7,26 @@ from .models import Dish
 # Create your views here.
 
 def login_page(request):
-    if(request.method=="POST"):
+    if request.method == 'POST':
         username = request.POST.get('_username')
         password = request.POST.get('_password')
-        Account.objects.filter(username=username, password=password)
-        return redirect('basic_list')
+        a = Account.objects.filter(username=username, password=password)
+        return render(request, 'basic_list') 
     else:
-        a = get_object_or_404(Account, pk=pk)
-        return redirect('tapasapp/no_login.html')
+        return redirect('no_login')
     
 def no_login(request):
-    return render(request, 'login_page')
+    if request.method == 'POST':
+        return render(request, 'login_page')
+    else:
+        return redirect('login_page')
 
 def manage_account(request, pk):
-    user=get_object_or_404(User, pk=pk)
+    user=get_object_or_404(Account, pk=pk)
     return render(request, 'manage_account.html', {'user_obj': user})
                                                    
 def change_password(request, pk):
-    user=get_object_or_404(User, pk=pk)
+    user=get_object_or_404(Account, pk=pk)
 
     if request.method == 'POST': 
         new_password = request.POST.get('password')
@@ -35,7 +37,7 @@ def change_password(request, pk):
     return render(request, 'change_password.html', {'user_obj': user})
 
 def delete_account(request, pk):
-    user=get_object_or_404(User, pk=pk)
+    user=get_object_or_404(Account, pk=pk)
 
     if request.method == 'POST': 
         user.delete()
