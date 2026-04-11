@@ -1,8 +1,23 @@
-from django.shortcuts import render, redirect, get_object_or_404; import logout; import User
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import logout
+from django.contrib.auth.models import User
 from .models import Account
 from .models import Dish 
 
 # Create your views here.
+
+def login_page(request):
+    if(request.method=="POST"):
+        username = request.POST.get('_username')
+        password = request.POST.get('_password')
+        Account.objects.filter(username=username, password=password)
+        return redirect('basic_list')
+    else:
+        a = get_object_or_404(Account, pk=pk)
+        return redirect('tapasapp/no_login.html')
+    
+def no_login(request):
+    return render(request, 'login_page')
 
 def manage_account(request, pk):
     user=get_object_or_404(User, pk=pk)
