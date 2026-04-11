@@ -3,10 +3,9 @@ from .models import Dish
 
 # Create your views here.
 
-
 def manage_account(request, pk):
     user=get_object_or_404(User, pk=pk)
-    return render(request, 'manage.account.html', {user_obj': user})
+    return render(request, 'manage_account.html', {'user_obj': user})
                                                    
 def change_password(request, pk):
     user=get_object_or_404(User, pk=pk)
