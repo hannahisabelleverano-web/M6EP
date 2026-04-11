@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, import logout 
 from .models import Dish 
 
 # Create your views here.
@@ -9,6 +9,7 @@ def manage_account(request):
 
 def logout_view(request): 
     logout(request)
+    return redirect('login')
 
 def add_menu(request):
     if(request.method=="POST"):
