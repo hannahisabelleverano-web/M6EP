@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect, get_object_or_404, import logout import User
+from django.shortcuts import render, redirect, get_object_or_404; import logout; import User
+from .models import Account
 from .models import Dish 
 
 # Create your views here.
@@ -6,7 +7,7 @@ from .models import Dish
 
 def manage_account(request, pk):
     user=get_object_or_404(User, pk=pk)
-    return render(request, 'manage.account.html', {user_obj': user})
+    return render(request, 'manage.account.html', {'user_obj': user})
                                                    
 def change_password(request, pk):
     user=get_object_or_404(User, pk=pk)
@@ -17,7 +18,7 @@ def change_password(request, pk):
         user.save()
         return redirect('login')
     
-    return render(request, 'change_password.html', {user_obj': user})
+    return render(request, 'change_password.html', {'user_obj': user})
 
 def delete_account(request, pk):
     user=get_object_or_404(User, pk=pk)
@@ -27,7 +28,7 @@ def delete_account(request, pk):
         logout(request)
         return redirect('login')
     
-    return render(request, 'delete_account.html', {user_obj': user})
+    return render(request, 'delete_account.html', {'user_obj': user})
 
 def logout_view(request): 
     logout(request)
