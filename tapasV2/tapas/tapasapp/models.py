@@ -22,5 +22,5 @@ class Dish(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return str(self.pk) + ": " + self.name
+        return str(self.pk) + ": " + self.username + "" + self.password
     

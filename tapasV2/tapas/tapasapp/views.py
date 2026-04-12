@@ -16,10 +16,12 @@ def login_page(request):
         return redirect('no_login')
     
 def no_login(request):
+    success = request.session.pop('signup_success', None)
+
     if request.method == 'POST':
-        return render(request, 'login_page')
+        return render(request, 'login_page', {'success': success})
     else:
-        return redirect('login_page')
+        return redirect('login_page', {'success': success})
 
 def manage_account(request, pk):
     user=get_object_or_404(Account, pk=pk)
@@ -27,14 +29,59 @@ def manage_account(request, pk):
                                                    
 def change_password(request, pk):
     user=get_object_or_404(Account, pk=pk)
+    error = None
 
     if request.method == 'POST': 
-        new_password = request.POST.get('password')
-        user.set_password(new_password)
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if current_password != user.password:
+            error = "Current password is incorrect"
+            return render(request, 'change_password.html', {
+                'user_obj': user,
+                'error': error
+                })
+        if new_password != confirm_password:
+            error = "New passwords do not match"
+            return render(request, 'change_password.html', {
+                'user_obj': user,
+                'error': error
+            })
+        
+        user.password = new_password
         user.save()
-        return redirect('login')
+
+        return redirect('manage_account', pk=pk)
     
-    return render(request, 'change_password.html', {'user_obj': user})
+    return render(request, 'change_password.html', {'user_obj': user, 'error': error})
+
+def signup_view(request):
+    error = None
+
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if Account.objects.filter(username=username).exists():
+            error = "Account already exists"
+            return render(request, 'signup.html', {'error': error})
+        
+        # if password is matching obv
+        if password != confirm_password:
+            error = "Passwords do not match"
+            return render(request, signup.html)
+        
+        if not username or not password:
+            error = "Username and password are required"
+            return render(request, 'signup.html', {'error': error})
+        
+        Account.objects.create(username=username,password=password)
+
+        return redirect('/?success=Account created successfully')
+        
+    return render(request, 'signup.html', {'error': error})
 
 def delete_account(request, pk):
     user=get_object_or_404(Account, pk=pk)

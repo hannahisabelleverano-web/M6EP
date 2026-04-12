@@ -10,6 +10,11 @@
         </div>
         <div class="card-body">
 
+            {% if request.GET.success %}
+                <div class="alert-alert-success" role="alert">
+                    {{requst.GET.success }}
+                </div>
+            {% endif %}
             <form method="POST" action="{% url 'login_page' %}">{% csrf_token %}
             
                 <div class="form-group">
