@@ -9,18 +9,21 @@ def login_page(request):
     if request.method == 'POST':
         username = request.POST.get('_username')
         password = request.POST.get('_password')
-        a = Account.objects.filter(username=username, password=password)
-        return render(request, 'basic_list.html') 
-    else:
-        return redirect('no_login')
+
+        try:
+            account = Account.objects.get(username=username, password=password)
+            request.session['user_id'] = account.id
+            return redirect('basic_list', pk=account.id)
+        except Account.DoesNotExist:
+            return redirect('no_login')
+        
+    return render(request, 'login_page.html')
     
 def no_login(request):
-    success = request.session.pop('signup_success', None)
-
     if request.method == 'POST':
-        return render(request, 'login_page.html', {'success': success})
+        return render(request, 'login_page.html')
     else:
-        return redirect('login_page', {'success': success})
+        return redirect('no_login.html')
 
 def manage_account(request, pk):
     user=get_object_or_404(Account, pk=pk)
