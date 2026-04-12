@@ -13,21 +13,21 @@ def login_page(request):
         try:
             account = Account.objects.get(username=username, password=password)
             request.session['user_id'] = account.id
-            return redirect('basic_list', pk=account.id)
+            return redirect('tapasapp/basic_list.html', pk=account.id)
         except Account.DoesNotExist:
             return redirect('no_login')
         
-    return render(request, 'login_page')
+    return render(request, 'tapasapp/login_page.html')
     
 def no_login(request):
     if request.method == 'POST':
-        return render(request, 'login_page.html')
+        render(request, 'tapasapp/no_login.html')
     else:
-        return redirect('no_login.html')
+        return redirect('no_login')
 
 def manage_account(request, pk):
     user=get_object_or_404(Account, pk=pk)
-    return render(request, 'manage_account.html', {'user_obj': user})
+    return render(request, 'tapasapp/manage_account.html', {'user_obj': user})
                                                    
 def change_password(request, pk):
     user=get_object_or_404(Account, pk=pk)
@@ -40,13 +40,13 @@ def change_password(request, pk):
 
         if current_password != user.password:
             error = "Current password is incorrect"
-            return render(request, 'change_password.html', {
+            return render(request, 'tapasapp/change_password.html', {
                 'user_obj': user,
                 'error': error
                 })
         if new_password != confirm_password:
             error = "New passwords do not match"
-            return render(request, 'change_password.html', {
+            return render(request, 'tapasapp/change_password.html', {
                 'user_obj': user,
                 'error': error
             })
@@ -56,7 +56,7 @@ def change_password(request, pk):
 
         return redirect('manage_account', pk=pk)
     
-    return render(request, 'change_password.html', {'user_obj': user, 'error': error})
+    return render(request, 'tapasapp/change_password.html', {'user_obj': user, 'error': error})
 
 def signup_view(request):
     error = None
@@ -68,22 +68,22 @@ def signup_view(request):
 
         if Account.objects.filter(username=username).exists():
             error = "Account already exists"
-            return render(request, 'signup.html', {'error': error})
+            return render(request, 'tapasapp/signup.html', {'error': error})
         
         # if password is matching obv
         if password != confirm_password:
             error = "Passwords do not match"
-            return render(request, 'signup.html', {'error': error})
+            return render(request, 'tapasapp/signup.html', {'error': error})
         
         if not username or not password:
             error = "Username and password are required"
-            return render(request, 'signup.html', {'error': error})
+            return render(request, 'tapasapp/signup.html', {'error': error})
         
         Account.objects.create(username=username,password=password)
 
         return redirect('/?success=Account created successfully')
         
-    return render(request, 'signup.html', {'error': error})
+    return render(request, 'tapasapp/signup.html', {'error': error})
 
 def delete_account(request, pk):
     user=get_object_or_404(Account, pk=pk)
@@ -93,7 +93,7 @@ def delete_account(request, pk):
         del request.session['user_id']
         return redirect('login_page')
     
-    return render(request, 'delete_account.html', {'user_obj': user})
+    return render(request, 'tapasapp/delete_account.html', {'user_obj': user})
 
 def logout_view(request): 
     logout(request)
