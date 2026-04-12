@@ -17,7 +17,7 @@ def login_page(request):
         except Account.DoesNotExist:
             return redirect('no_login')
         
-    return render(request, 'login_page.html')
+    return render(request, 'login_page')
     
 def no_login(request):
     if request.method == 'POST':
@@ -90,8 +90,8 @@ def delete_account(request, pk):
 
     if request.method == 'POST': 
         user.delete()
-        logout(request)
-        return redirect('login')
+        del request.session['user_id']
+        return redirect('login_page')
     
     return render(request, 'delete_account.html', {'user_obj': user})
 
