@@ -7,7 +7,7 @@ from .models import Account, Dish
 
 def basic_list(request):
     dish_objects = Dish.objects.all()
-    return render(request, 'tapasapp/basic_list.html', {'dishes':dish_objects})
+    return render(request, 'tapasapp/basic_list', {'dishes':dish_objects})
 
 def login_page(request):
     if request.method == 'POST':
