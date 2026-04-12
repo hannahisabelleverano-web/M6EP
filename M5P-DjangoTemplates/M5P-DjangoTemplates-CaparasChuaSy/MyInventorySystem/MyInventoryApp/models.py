@@ -29,3 +29,8 @@ class WaterBottle(models.Model):
             self.sku + ": " + self.brand + ", " + self.mouth_size + ", " + self.size + ", " + self.color
             + ", supplied by " + self.supplied_by.name + ", " + str(self.cost) + " : " + str(self.current_quantity)
         )
+
+class Account(models.Model): 
+    username = models.CharField(max_length=100, unique=True)
+    password = models.CharField(max_length=100)
+
