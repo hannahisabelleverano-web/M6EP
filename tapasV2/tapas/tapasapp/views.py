@@ -70,7 +70,7 @@ def signup_view(request):
         # if password is matching obv
         if password != confirm_password:
             error = "Passwords do not match"
-            return render(request, signup.html)
+            return render(request, 'signup.html', {'error': error})
         
         if not username or not password:
             error = "Username and password are required"
