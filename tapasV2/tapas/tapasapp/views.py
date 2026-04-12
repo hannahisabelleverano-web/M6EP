@@ -5,6 +5,10 @@ from .models import Account, Dish
 
 # Create your views here.
 
+def basic_list(request):
+    dish_objects = Dish.objects.all()
+    return render(request, 'tapasapp/basic_list.html', {'dishes':dish_objects})
+
 def login_page(request):
     if request.method == 'POST':
         username = request.POST.get('_username')
