@@ -18,7 +18,7 @@ def no_login(request):
     success = request.session.pop('signup_success', None)
 
     if request.method == 'POST':
-        return render(request, 'login_page', {'success': success})
+        return render(request, 'login_page.html', {'success': success})
     else:
         return redirect('login_page', {'success': success})
 
