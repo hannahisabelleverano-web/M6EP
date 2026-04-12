@@ -1,27 +1,87 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import logout 
-from django.contrib.auth.models import User
+from django.shortcuts import render, redirect, get_object_or_404, import logout import User
 from .models import Dish 
 
 # Create your views here.
 
+def login_page(request):
+    if request.method == 'POST':
+        username = request.POST.get('_username')
+        password = request.POST.get('_password')
+        a = Account.objects.filter(username=username, password=password)
+        return render(request, 'basic_list') 
+    else:
+        return redirect('no_login')
+    
+def no_login(request):
+    success = request.session.pop('signup_success', None)
+
+    if request.method == 'POST':
+        return render(request, 'login_page', {'success': success})
+    else:
+        return redirect('login_page', {'success': success})
+
 def manage_account(request, pk):
-    user=get_object_or_404(User, pk=pk)
+    user=get_object_or_404(Account, pk=pk)
     return render(request, 'manage_account.html', {'user_obj': user})
                                                    
 def change_password(request, pk):
-    user=get_object_or_404(User, pk=pk)
+    user=get_object_or_404(Account, pk=pk)
+    error = None
 
     if request.method == 'POST': 
-        new_password = request.POST.get('password')
-        user.set_password(new_password)
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if current_password != user.password:
+            error = "Current password is incorrect"
+            return render(request, 'change_password.html', {
+                'user_obj': user,
+                'error': error
+                })
+        if new_password != confirm_password:
+            error = "New passwords do not match"
+            return render(request, 'change_password.html', {
+                'user_obj': user,
+                'error': error
+            })
+        
+        user.password = new_password
         user.save()
-        return redirect('login')
+
+        return redirect('manage_account', pk=pk)
     
-    return render(request, 'change_password.html', {'user_obj': user})
+    return render(request, 'change_password.html', {'user_obj': user, 'error': error})
+
+def signup_view(request):
+    error = None
+
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if Account.objects.filter(username=username).exists():
+            error = "Account already exists"
+            return render(request, 'signup.html', {'error': error})
+        
+        # if password is matching obv
+        if password != confirm_password:
+            error = "Passwords do not match"
+            return render(request, signup.html)
+        
+        if not username or not password:
+            error = "Username and password are required"
+            return render(request, 'signup.html', {'error': error})
+        
+        Account.objects.create(username=username,password=password)
+
+        return redirect('/?success=Account created successfully')
+        
+    return render(request, 'signup.html', {'error': error})
 
 def delete_account(request, pk):
-    user=get_object_or_404(User, pk=pk)
+    user=get_object_or_404(Account, pk=pk)
 
     if request.method == 'POST': 
         user.delete()
