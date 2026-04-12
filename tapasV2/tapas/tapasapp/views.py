@@ -1,5 +1,7 @@
-from django.shortcuts import render, redirect, get_object_or_404, import logout import User
-from .models import Dish 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import logout
+from django.contrib.auth.models import User
+from .models import Account, Dish 
 
 # Create your views here.
 
@@ -7,18 +9,21 @@ def login_page(request):
     if request.method == 'POST':
         username = request.POST.get('_username')
         password = request.POST.get('_password')
-        a = Account.objects.filter(username=username, password=password)
-        return render(request, 'basic_list') 
-    else:
-        return redirect('no_login')
+
+        try:
+            account = Account.objects.get(username=username, password=password)
+            request.session['user_id'] = account.id
+            return redirect('basic_list', pk=account.id)
+        except Account.DoesNotExist:
+            return redirect('no_login')
+        
+    return render(request, 'login_page.html')
     
 def no_login(request):
-    success = request.session.pop('signup_success', None)
-
     if request.method == 'POST':
-        return render(request, 'login_page', {'success': success})
+        return render(request, 'login_page.html')
     else:
-        return redirect('login_page', {'success': success})
+        return redirect('no_login.html')
 
 def manage_account(request, pk):
     user=get_object_or_404(Account, pk=pk)
@@ -68,7 +73,7 @@ def signup_view(request):
         # if password is matching obv
         if password != confirm_password:
             error = "Passwords do not match"
-            return render(request, signup.html)
+            return render(request, 'signup.html', {'error': error})
         
         if not username or not password:
             error = "Username and password are required"
