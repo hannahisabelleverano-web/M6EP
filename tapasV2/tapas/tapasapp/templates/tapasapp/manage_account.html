@@ -1,19 +1,24 @@
 {% extends 'tapasapp/base.html' %}
 {% load static %}
 
-                {% block content %}
-                    <h2> Account Settings </h2>
-                    <p> Username: {{ user_obj.username }} </p>
-                
-                    <a href="{% url 'change_password' pk=user_obj.pk %}" class="btn btn-warning">
-                    Change Password
-                    </a>
+{% block content %}
+<div class="col-md-8">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title">Account Settings</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Username:</strong> {{ user_obj.username }}</p>
 
-                    <form action="{% url 'delete_account' pk=user_obj.pk %}" method="post">
-                        {% csrf token %}
-                        <button type="submit" class="btn btn-danger">
-                            Delete Account
-                        </button>
-                    </form>
-                    
-                {% endblock %}
+            <a href="{% url 'change_password' pk=user_obj.pk %}" class="btn btn-warning">Change Password</a>
+
+            <form action="{% url 'delete_account' pk=user_obj.pk %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Delete Account</button>
+            </form>
+
+            <a href="{% url 'basic_list' pk=user_obj.pk %}" class="btn btn-secondary">Back</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

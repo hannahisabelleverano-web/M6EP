@@ -1,6 +1,4 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import logout
-from django.contrib.auth.models import User
 from .models import Account, Dish 
 
 # Create your views here.
@@ -15,15 +13,15 @@ def login_page(request):
             request.session['user_id'] = account.id
             return redirect('tapasapp/basic_list.html', pk=account.id)
         except Account.DoesNotExist:
-            return redirect('no_login')
-        
-    return render(request, 'tapasapp/login_page.html')
+            return render(request, 'tapasapp/login_page.html', {'error': 'Invalid login'})
     
-def no_login(request):
-    if request.method == 'POST':
-        render(request, 'tapasapp/no_login.html')
-    else:
-        return redirect('no_login')
+    success = request.GET.get('success')
+    return render(request, 'tapasapp/login_page.html', {'success': success})
+    
+def basic_list(request, pk):
+    user = get_object_or_404(Account, pk=pk)
+    dishes = Dish.objects.all()
+    return render(request, 'tapasapp/basic_list.html', {'dishes': dishes, 'user_obj': user})
 
 def manage_account(request, pk):
     user=get_object_or_404(Account, pk=pk)
@@ -40,21 +38,12 @@ def change_password(request, pk):
 
         if current_password != user.password:
             error = "Current password is incorrect"
-            return render(request, 'tapasapp/change_password.html', {
-                'user_obj': user,
-                'error': error
-                })
-        if new_password != confirm_password:
+        elif new_password != confirm_password:
             error = "New passwords do not match"
-            return render(request, 'tapasapp/change_password.html', {
-                'user_obj': user,
-                'error': error
-            })
-        
-        user.password = new_password
-        user.save()
-
-        return redirect('manage_account', pk=pk)
+        else:
+            user.password = new_password
+            user.save()
+            return redirect('manage_account', pk=pk)
     
     return render(request, 'tapasapp/change_password.html', {'user_obj': user, 'error': error})
 
@@ -66,22 +55,15 @@ def signup_view(request):
         password = request.POST.get('password')
         confirm_password = request.POST.get('confirm_password')
 
-        if Account.objects.filter(username=username).exists():
-            error = "Account already exists"
-            return render(request, 'tapasapp/signup.html', {'error': error})
-        
-        # if password is matching obv
-        if password != confirm_password:
-            error = "Passwords do not match"
-            return render(request, 'tapasapp/signup.html', {'error': error})
-        
         if not username or not password:
             error = "Username and password are required"
-            return render(request, 'tapasapp/signup.html', {'error': error})
-        
-        Account.objects.create(username=username,password=password)
-
-        return redirect('/?success=Account created successfully')
+        elif Account.objects.filter(username=username).exists():
+            error = "Username already exists"
+        elif password != confirm_password:
+            error = "Passwords do not match"
+        else:
+            Account.objects.create(username=username, password=password)
+            return redirect('/?success=Account created successfully')
         
     return render(request, 'tapasapp/signup.html', {'error': error})
 
@@ -90,14 +72,16 @@ def delete_account(request, pk):
 
     if request.method == 'POST': 
         user.delete()
-        del request.session['user_id']
+        if 'user_id' in request.session:
+            del request.session['user_id']
         return redirect('login_page')
     
     return render(request, 'tapasapp/delete_account.html', {'user_obj': user})
 
 def logout_view(request): 
-    logout(request)
-    return redirect('login')
+    if 'user_id' in request.session:
+        del request.session['user_id']
+    return redirect('login_page')
 
 def add_menu(request):
     if(request.method=="POST"):
@@ -105,6 +89,7 @@ def add_menu(request):
         cooktime = request.POST.get('ctime')
         preptime = request.POST.get('ptime')
         Dish.objects.create(name=dishname, cook_time=cooktime, prep_time=preptime)
+        user_id = request.session.get('user_id')
         return redirect('better_menu')
     else:
         return render(request, 'tapasapp/add_menu.html')
@@ -115,6 +100,7 @@ def view_detail(request, pk):
 
 def delete_dish(request, pk):
     Dish.objects.filter(pk=pk).delete()
+    user_if = request.session.get('user_id')
     return redirect('better_menu')
 
 def update_dish(request, pk):
@@ -123,6 +109,5 @@ def update_dish(request, pk):
         preptime = request.POST.get('ptime')
         Dish.objects.filter(pk=pk).update(cook_time=cooktime, prep_time=preptime)
         return redirect('view_detail', pk=pk)
-    else:
-        d = get_object_or_404(Dish, pk=pk)
-        return render(request, 'tapasapp/update_menu.html', {'d':d})
+    d = get_object_or_404(Dish, pk=pk)
+    return render(request, 'tapasapp/update_menu.html', {'d':d})

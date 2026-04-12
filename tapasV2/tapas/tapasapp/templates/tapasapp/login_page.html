@@ -10,11 +10,18 @@
         </div>
         <div class="card-body">
 
-            {% if request.GET.success %}
-                <div class="alert-alert-success" role="alert">
-                    {{requst.GET.success }}
+            {% if success %}
+                <div class="alert alert-success" role="alert">
+                    {{ success }}
                 </div>
             {% endif %}
+
+            {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+            {% endif %}
+            
             <form method="POST" action="{% url 'login_page' %}">{% csrf_token %}
             
                 <div class="form-group">
@@ -35,7 +42,6 @@
         <a href="{% url 'signup' %}">
         <button type="button" class="mt-3 btn btn-secondary">Sign-Up</button>
         </a>
-        <a href="{% url 'basic_list' %}">Basic List</a>
 
     </div>
 
