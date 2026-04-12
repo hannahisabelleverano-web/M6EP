@@ -10,7 +10,7 @@ def login_page(request):
         username = request.POST.get('_username')
         password = request.POST.get('_password')
         a = Account.objects.filter(username=username, password=password)
-        return render(request, 'basic_list') 
+        return render(request, 'basic_list.html') 
     else:
         return redirect('no_login')
     
