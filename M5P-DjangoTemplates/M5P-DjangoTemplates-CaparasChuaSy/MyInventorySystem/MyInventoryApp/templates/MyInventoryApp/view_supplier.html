@@ -14,9 +14,6 @@
         <tbody>
             {% for supplier in suppliers %}
                 <tr>
-                    <td> 
-                        <a href="{% url 'bottles' supplier.id %}">{{supplier.name}}</a>
-                    </td>
                     <td>{{ supplier.name }}</td>
                     <td>{{ supplier.city }}</td>
                     <td>{{ supplier.country }}</td>
@@ -25,10 +22,4 @@
             {% endfor %}
         </tbody>
     </table>
-
-    <div class="mt-4">
-        <a href="{% url 'add_bottles' %}" class="btn btn-primary"> Add Water </a>
-        <a href="{% url 'manage_account' %}" class="btn btn-primary"> Manage Account </a>
-        <a href="{% url 'logout' %}" class="btn btn-danger"> Manage Account </a>
-    </div>
 {% endblock %}
