@@ -32,7 +32,8 @@
         </thead>
         <tbody>
             {% for bottle in bottles %}
-                <tr onclick="window.location='{% url 'view_bottle_details' bottle.pk %}'">
+                <tr>
+                    <td><a href="{% url 'view_bottle_details' bottle.pk %}">{{ bottle.sku }}</a>
                     <td>{{ bottle.sku }}</td>
                     <td>{{ bottle.brand }}</td>
                     <td>{{ bottle.cost }}</td>

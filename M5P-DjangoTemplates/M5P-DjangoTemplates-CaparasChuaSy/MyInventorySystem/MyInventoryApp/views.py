@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from .models import Supplier, WaterBottle, Account
 from django.contrib.auth import logout 
 
@@ -47,7 +47,7 @@ def add_bottle(request):
         supplied_by_id = request.POST.get('supplied_by')
         current_quantity = request.POST.get('current_quantity')
 
-        supplier = Supplier.objects.get(pk=supplied_by_id)
+        supplier = get_object_or_404(Supplier, pk=supplied_by_id)
 
         WaterBottle.objects.create(
             sku=sku, 
@@ -63,6 +63,7 @@ def add_bottle(request):
 
 def login_view(request): 
     error = None 
+    success = request.GET.get('success', None)
     if request.method == 'POST': 
         username= request.POST.get('username')
         password= request.POST.get('password')
@@ -75,7 +76,7 @@ def login_view(request):
         else: 
             error = "Invalid Login"
 
-    return render(request, 'login.html', {'error': error})
+    return render(request, 'login.html', {'error': error, 'success': success})
 
 def signup_view(request): 
     error_in_signup = None
@@ -89,8 +90,49 @@ def signup_view(request):
         else: 
             Account.objects.create(username=username, password=password)
 
-    return render(request, 'login.html', {'error': error_in_signup})
+    return render(request, 'login.html', {'error': error_in_signup, 'success': 'Account created successfully'})
 
 def logout_view(request):
-    logout(request)
+    if 'user_id' in request.session:
+        del request.session['user_id']
+    return redirect('login_page')
+
+def manage_account(request, pk):
+    if 'user_id' not in request.session or request.session['user_id'] != pk:
+        return redirect('login_page')
+    account_object = Account.objects.get(pk=pk)
+    return render(request, 'MyInventoryApp/manage_account.html', {'account': account_object})
+
+def change_password(request, pk):
+    if 'user_id' not in request.session or request.session['user_id'] != pk:
+        return redirect('login_page')
+    
+    user = get_object_or_404(Account, pk=pk)
+    error = None
+
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if current_password != user.password:
+            error = "The current password is incorrect."
+            return render(request, 'MyInventoryApp/change_password.html', {'account': user, 'error': error})
+        
+        if new_password != confirm_password:
+            error = "The new passwords do not match"
+            return render(request, 'MyInventoryApp/change_password.html', {'account': user, 'error': error})
+        
+        user.password = new_password
+        user.save()
+        return redirect('manage_account', pk=pk)
+    return render(request, 'MyInventoryApp/change_password.html', {'account': user, 'error': error})
+
+def delete_account(request, pk):
+    if 'user_id' not in request.session or request.session['user_id'] != pk:
+        return redirect('login_page')
+    
+    user = get_object_or_404(Account, pk=pk)
+    user.delete()
+    del request.session['user_id']
     return redirect('login_page')
