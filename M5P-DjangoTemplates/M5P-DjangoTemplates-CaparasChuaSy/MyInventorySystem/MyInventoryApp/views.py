@@ -71,7 +71,7 @@ def login_view(request):
         existing_user= Account.objects.filter(username=username, password=password)
 
         if existing_user: 
-            return redirect('suppliers')
+            return redirect('basic_list', pk=existing_user.first().pk)
         
         else: 
             error = "Invalid Login"
@@ -85,7 +85,7 @@ def signup_view(request):
         password= request.POST.get('password')
     
         if Account.objects.filter(username=username).exists(): 
-            ExistingUser="Account already existing"
+            error_in_signup = "Account already existing"
         
         else: 
             Account.objects.create(username=username, password=password)
@@ -136,3 +136,11 @@ def delete_account(request, pk):
     user.delete()
     del request.session['user_id']
     return redirect('login_page')
+
+def basic_list(request, pk):
+    if 'user_id' not in request.session or request.session['user_id'] != pk:
+        return redirect('login_page')
+    user = get_object_or_404(Account, pk=pk)
+    supplier_count = Supplier.objects.count()
+    bottle_count = WaterBottle.objects.count()
+    return render(request, 'MyInventoryApp/basic_list.html' , {'account': user, 'supplier_count': supplier_count, 'bottle_count': bottle_count})
