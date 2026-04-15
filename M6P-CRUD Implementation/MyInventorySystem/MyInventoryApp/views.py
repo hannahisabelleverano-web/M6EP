@@ -76,7 +76,7 @@ def login_view(request):
         else: 
             error = "Invalid Login"
 
-    return render(request, 'login_view.html', {'error': error, 'success': success})
+    return render(request, 'MyInventoryApp/login_view.html', {'error': error, 'success': success})
 
 def signup_view(request): 
     error_in_signup = None
@@ -90,7 +90,7 @@ def signup_view(request):
         else: 
             Account.objects.create(username=username, password=password)
 
-    return render(request, 'login_view.html', {'error': error_in_signup, 'success': 'Account created successfully'})
+    return render(request, 'MyInventoryApp/login_view.html', {'error': error_in_signup, 'success': 'Account created successfully'})
 
 def logout_view(request):
     if 'user_id' in request.session:
