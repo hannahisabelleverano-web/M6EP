@@ -7,26 +7,26 @@ from django.contrib.auth import logout
 
 def view_supplier(request):
     if 'user_id' not in request.session:
-        return redirect('login_page')
+        return redirect('login_view')
     supplier_objects = Supplier.objects.all()
     return render(request, 'MyInventoryApp/view_supplier.html', {'suppliers': supplier_objects})
 
 
 def view_bottles(request):
     if 'user_id' not in request.session:
-        return redirect('login_page')
+        return redirect('login_view')
     bottle_objects = WaterBottle.objects.all()
     return render(request, 'MyInventoryApp/view_bottles.html', {'bottles': bottle_objects})
 
 def view_bottle_details(request, pk):
     if 'user_id' not in request.session:
-        return redirect('login_page')
+        return redirect('login_view')
     bottle_object = WaterBottle.objects.get(pk=pk)
     return render(request, 'MyInventoryApp/view_bottle_details.html', {'bottle': bottle_object})
 
 def delete_bottle(request, pk):
     if 'user_id' not in request.session:
-        return redirect('login_page')
+        return redirect('login_view')
     bottle_object = WaterBottle.objects.get(pk=pk)
     bottle_object.delete()
     return redirect('view_bottles')
@@ -34,7 +34,7 @@ def delete_bottle(request, pk):
 
 def add_bottle(request):
     if 'user_id' not in request.session:
-        return redirect('login_page')
+        return redirect('login_view')
     supplier_objects = Supplier.objects.all()
 
     if request.method == 'POST':
@@ -76,7 +76,7 @@ def login_view(request):
         else: 
             error = "Invalid Login"
 
-    return render(request, 'login.html', {'error': error, 'success': success})
+    return render(request, 'login_view.html', {'error': error, 'success': success})
 
 def signup_view(request): 
     error_in_signup = None
@@ -90,22 +90,22 @@ def signup_view(request):
         else: 
             Account.objects.create(username=username, password=password)
 
-    return render(request, 'login.html', {'error': error_in_signup, 'success': 'Account created successfully'})
+    return render(request, 'login_view.html', {'error': error_in_signup, 'success': 'Account created successfully'})
 
 def logout_view(request):
     if 'user_id' in request.session:
         del request.session['user_id']
-    return redirect('login_page')
+    return redirect('login_view')
 
 def manage_account(request, pk):
     if 'user_id' not in request.session or request.session['user_id'] != pk:
-        return redirect('login_page')
+        return redirect('login_view')
     account_object = Account.objects.get(pk=pk)
     return render(request, 'MyInventoryApp/manage_account.html', {'account': account_object})
 
 def change_password(request, pk):
     if 'user_id' not in request.session or request.session['user_id'] != pk:
-        return redirect('login_page')
+        return redirect('login_view')
     
     user = get_object_or_404(Account, pk=pk)
     error = None
@@ -130,16 +130,16 @@ def change_password(request, pk):
 
 def delete_account(request, pk):
     if 'user_id' not in request.session or request.session['user_id'] != pk:
-        return redirect('login_page')
+        return redirect('login_view')
     
     user = get_object_or_404(Account, pk=pk)
     user.delete()
     del request.session['user_id']
-    return redirect('login_page')
+    return redirect('login_view')
 
 def basic_list(request, pk):
     if 'user_id' not in request.session or request.session['user_id'] != pk:
-        return redirect('login_page')
+        return redirect('login_view')
     user = get_object_or_404(Account, pk=pk)
     supplier_count = Supplier.objects.count()
     bottle_count = WaterBottle.objects.count()
