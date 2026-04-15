@@ -71,7 +71,7 @@ def login_view(request):
         existing_user= Account.objects.filter(username=username, password=password)
 
         if existing_user: 
-            return redirect('basic_list', pk=existing_user.first().pk)
+            return redirect('view_bottles', pk=existing_user.first().pk)
         
         else: 
             error = "Invalid Login"
