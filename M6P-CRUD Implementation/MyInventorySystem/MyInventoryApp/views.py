@@ -56,7 +56,7 @@ def add_bottle(request):
             size=size, 
             mouth_size=mouth_size, 
             color=color, 
-            supplied_by_id=supplier,
+            supplied_by=supplier,
             current_quantity=current_quantity)
         return redirect('view_bottles')
     return render(request, 'MyInventoryApp/add_bottle.html', {'suppliers': supplier_objects})
@@ -86,15 +86,15 @@ def signup_view(request):
     
         if Account.objects.filter(username=username).exists(): 
             error_in_signup = "Account already existing"
-            return render(request, 'MyInventoryApp/signup_view.html', {'error': error_in_signup})
+            return render(request, 'MyInventoryApp/login_view.html', {'error': error_in_signup})
         
         if password != confirm_password:
             error_in_signup = "Passwords do not match"
-            return render(request, 'MyInventoryApp/signup_view.html', {'error': error_in_signup})
+            return render(request, 'MyInventoryApp/login_view.html', {'error': error_in_signup})
         
         if not username or not password:
             error_in_signup = "Username and password are required"
-            return render(request, 'MyInventoryApp/signup_view.html', {'error': error_in_signup})
+            return render(request, 'MyInventoryApp/login_view.html', {'error': error_in_signup})
  
         Account.objects.create(username=username, password=password)
         return redirect('/?success= Account created successfully')
@@ -110,7 +110,7 @@ def manage_account(request, pk):
     if 'user_id' not in request.session or request.session['user_id'] != pk:
         return redirect('login_view')
     account_object = Account.objects.get(pk=pk)
-    return render(request, 'MyInventoryApp/manage_account.html', {'account': account_object})
+    return render(request, 'MyInventoryApp/manage_account.html', {'user_object': account_object})
 
 def change_password(request, pk):
     if 'user_id' not in request.session or request.session['user_id'] != pk:

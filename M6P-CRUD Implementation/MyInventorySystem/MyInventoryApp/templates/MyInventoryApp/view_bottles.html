@@ -6,7 +6,7 @@
     <div>
         <a href="{% url 'add_bottle' %}" class="btn btn-success">Add Water Bottles</a>
         <a href="{% url 'manage_account' pk=request.session.user_id %}" class="btn btn-warning">Manage Account</a>
-        <a href="{% url 'logout_view' %}" class="btn btn-danger">Logout</a>
+        <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
         <a href="{%url 'view_supplier' %}" class="btn btn-secondary">Back to Suppliers</a>
     </div>
 </div>
