@@ -1,7 +1,5 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from .models import Supplier, WaterBottle, Account
-from django.contrib.auth import logout 
-
 
 # Create your views here.
 
