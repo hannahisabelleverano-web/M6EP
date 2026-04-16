@@ -65,16 +65,14 @@ def login_view(request):
     error = None 
     success = request.GET.get('success', None)
     if request.method == 'POST': 
-        username= request.POST.get('username')
-        password= request.POST.get('password')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
-        existing_user= Account.objects.filter(username=username, password=password)
-
-        if existing_user: 
-            request.session['user_id'] = existing_user.first().pk
+        try:
+            user = Account.objects.get(username=username, password=password)
+            request.session['user_id'] = user.pk
             return redirect('view_supplier')
-        
-        else: 
+        except Account.DoesNotExist:
             error = "Invalid Login"
 
     return render(request, 'MyInventoryApp/login_view.html', {'error': error, 'success': success})
@@ -82,14 +80,24 @@ def login_view(request):
 def signup_view(request): 
     error_in_signup = None
     if request.method == 'POST': 
-        username= request.POST.get('username')
-        password= request.POST.get('password')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
     
         if Account.objects.filter(username=username).exists(): 
             error_in_signup = "Account already existing"
+            return render(request, 'MyInventoryApp/signup_view.html', {'error': error_in_signup})
         
-        else: 
-            Account.objects.create(username=username, password=password)
+        if password != confirm_password:
+            error_in_signup = "Passwords do not match"
+            return render(request, 'MyInventoryApp/signup_view.html', {'error': error_in_signup})
+        
+        if not username or not password:
+            error_in_signup = "Username and password are required"
+            return render(request, 'MyInventoryApp/signup_view.html', {'error': error_in_signup})
+ 
+        Account.objects.create(username=username, password=password)
+        return redirect('/?success= Account created successfully')
 
     return render(request, 'MyInventoryApp/login_view.html', {'error': error_in_signup, 'success': 'Account created successfully'})
 
@@ -137,11 +145,3 @@ def delete_account(request, pk):
     user.delete()
     del request.session['user_id']
     return redirect('login_view')
-
-def basic_list(request, pk):
-    if 'user_id' not in request.session or request.session['user_id'] != pk:
-        return redirect('login_view')
-    user = get_object_or_404(Account, pk=pk)
-    supplier_count = Supplier.objects.count()
-    bottle_count = WaterBottle.objects.count()
-    return render(request, 'MyInventoryApp/basic_list.html' , {'account': user, 'supplier_count': supplier_count, 'bottle_count': bottle_count})
