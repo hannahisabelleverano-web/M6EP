@@ -87,14 +87,15 @@ def signup_view(request):
     
         if not username or not password:
             error_in_signup = "Username and password are required"
+            return render(request, 'MyInventoryApp/signup_view.html', {'error': error_in_signup})
         
         elif Account.objects.filter(username=username).exists(): 
             error_in_signup = "Account already existing"
-            return render(request, 'MyInventoryApp/login_view.html', {'error': error_in_signup})
+            return render(request, 'MyInventoryApp/signup_view.html', {'error': error_in_signup})
         
         elif password != confirm_password:
             error_in_signup = "Passwords do not match"
-            return render(request, 'MyInventoryApp/login_view.html', {'error': error_in_signup})
+            return render(request, 'MyInventoryApp/signup_view.html', {'error': error_in_signup})
         
         else:
             Account.objects.create(username=username, password=password)
