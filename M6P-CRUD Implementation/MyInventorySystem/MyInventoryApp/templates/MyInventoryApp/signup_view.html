@@ -16,7 +16,8 @@
             </div>
             {% endif %}
 
-            <form method="POST" action="{%url 'signup_view' %}">{% csrf_token %}
+            <form method="POST" action="{%url 'signup_view' %}">
+                {% csrf_token %}
                 <div class="form-group mb-3">
                     <label for="username">Username</label>
                     <input type="text" class="form-control" id="username" name="username" required>

@@ -57,8 +57,9 @@ def add_bottle(request):
             mouth_size=mouth_size, 
             color=color, 
             supplied_by=supplier,
-            current_quantity=current_quantity)
-        return redirect('view_bottles')
+            current_quantity=current_quantity
+        )
+        return redirect('view_supplier')
     return render(request, 'MyInventoryApp/add_bottle.html', {'suppliers': supplier_objects})
 
 def login_view(request): 
@@ -84,22 +85,22 @@ def signup_view(request):
         password = request.POST.get('password')
         confirm_password = request.POST.get('confirm_password')
     
-        if Account.objects.filter(username=username).exists(): 
+        if not username or not password:
+            error_in_signup = "Username and password are required"
+        
+        elif Account.objects.filter(username=username).exists(): 
             error_in_signup = "Account already existing"
             return render(request, 'MyInventoryApp/login_view.html', {'error': error_in_signup})
         
-        if password != confirm_password:
+        elif password != confirm_password:
             error_in_signup = "Passwords do not match"
             return render(request, 'MyInventoryApp/login_view.html', {'error': error_in_signup})
         
-        if not username or not password:
-            error_in_signup = "Username and password are required"
-            return render(request, 'MyInventoryApp/login_view.html', {'error': error_in_signup})
- 
-        Account.objects.create(username=username, password=password)
-        return redirect('/?success= Account created successfully')
+        else:
+            Account.objects.create(username=username, password=password)
+        return redirect('/?' + 'success=Account created successfully')
 
-    return render(request, 'MyInventoryApp/login_view.html', {'error': error_in_signup, 'success': 'Account created successfully'})
+    return render(request, 'MyInventoryApp/signup_view.html', {'error': error_in_signup, 'success': 'Account created successfully'})
 
 def logout_view(request):
     if 'user_id' in request.session:
@@ -110,7 +111,7 @@ def manage_account(request, pk):
     if 'user_id' not in request.session or request.session['user_id'] != pk:
         return redirect('login_view')
     account_object = Account.objects.get(pk=pk)
-    return render(request, 'MyInventoryApp/manage_account.html', {'user_object': account_object})
+    return render(request, 'MyInventoryApp/manage_account.html', {'user_obj': account_object})
 
 def change_password(request, pk):
     if 'user_id' not in request.session or request.session['user_id'] != pk:
@@ -126,16 +127,15 @@ def change_password(request, pk):
 
         if current_password != user.password:
             error = "The current password is incorrect."
-            return render(request, 'MyInventoryApp/change_password.html', {'account': user, 'error': error})
         
-        if new_password != confirm_password:
+        elif new_password != confirm_password:
             error = "The new passwords do not match"
-            return render(request, 'MyInventoryApp/change_password.html', {'account': user, 'error': error})
-        
-        user.password = new_password
-        user.save()
-        return redirect('manage_account', pk=pk)
-    return render(request, 'MyInventoryApp/change_password.html', {'account': user, 'error': error})
+
+        else:      
+            user.password = new_password
+            user.save()
+            return redirect('manage_account', pk=pk)
+    return render(request, 'MyInventoryApp/change_password.html', {'user_obj': user, 'error': error})
 
 def delete_account(request, pk):
     if 'user_id' not in request.session or request.session['user_id'] != pk:

@@ -4,30 +4,30 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>List of Suppliers</h2>
     <div>
-        <a href="{% url 'add_bottle' %}" class="btn btn-success">Add Supplier</a>
+        <a href="{% url 'add_bottle' %}" class="btn btn-success">Add Water Bottles</a>
         <a href="{% url 'manage_account' pk=request.session.user_id %}" class="btn btn-warning">Manage Account</a>
         <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
     </div>
 </div>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>City</th>
-                <th>Country</th>
-                <th>Created At</th>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>City</th>
+            <th>Country</th>
+            <th>Created At</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for supplier in suppliers %}
+            <tr style="cursor: pointer;">
+                <td><a href="{% url 'view_bottles' pk=supplier.pk %}">{{ supplier.name }}</a></td>
+                <td>{{ supplier.name }}</td>
+                <td>{{ supplier.city }}</td>
+                <td>{{ supplier.country }}</td>
+                <td>{{ supplier.created_at }}</td>
             </tr>
-        </thead>
-        <tbody>
-            {% for supplier in suppliers %}
-                <tr style="cursor: points;">
-                    <td><a href="{% url 'view_bottles' pk=supplier.pk %}">{{ supplier.name }}</a></td>
-                    <td>{{ supplier.name }}</td>
-                    <td>{{ supplier.city }}</td>
-                    <td>{{ supplier.country }}</td>
-                    <td>{{ supplier.created_at }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
