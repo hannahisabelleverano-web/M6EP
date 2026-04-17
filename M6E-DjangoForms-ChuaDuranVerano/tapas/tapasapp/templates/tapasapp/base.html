@@ -14,8 +14,12 @@
     <body>
         <nav class="navbar navbar-dark bg-custom mb-3 sticky-top" style="background-color: #590404;">
             <div class="container-fluid">
-                <a class="navbar-brand mb-0" href="{% url 'basic_list' %}">My Tapas Menu</span> </a>
-                <a href="{% url 'add_menu' %}" style="color:white"><i class="material-icons">add</i></a>
+                {% if request.session.user_id %}
+                    <a class="navbar-brand mb-0" href="{% url 'basic_list' pk=request.session.user_id %}">My Tapas Menu</span> </a>
+                    <a href="{% url 'add_menu' %}" style="color:white"><i class="material-icons">add</i></a>
+                {% else %}
+                    <a class="navbar-brand mb-0" href="{% url 'login_page' %}">My Tapas Menu</a>
+                {% endif %}
     
             </div>
 

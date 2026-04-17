@@ -3,7 +3,7 @@
 
                 {% block content %}
                 <div class>
-                    <a href="{% url 'manage_account' %}" class="btn btn-dark"> 
+                    <a href="{% url 'manage_account' pk=user_obj.pk %}" class="btn btn-dark"> 
                         Manage Account 
                     </a>
                     <a href="{% url 'logout' %}" class="btn btn-dark">

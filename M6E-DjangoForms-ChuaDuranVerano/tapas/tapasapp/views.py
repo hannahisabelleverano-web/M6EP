@@ -3,10 +3,6 @@ from .models import Account, Dish
 
 # Create your views here.
 
-def basic_list(request):
-    dish_objects = Dish.objects.all()
-    return render(request, 'tapasapp/basic_list', {'dishes':dish_objects})
-
 def login_page(request):
     if request.method == 'POST':
         username = request.POST.get('_username')
@@ -15,7 +11,7 @@ def login_page(request):
         try:
             account = Account.objects.get(username=username, password=password)
             request.session['user_id'] = account.id
-            return redirect('tapasapp/basic_list.html', pk=account.id)
+            return redirect('basic_list', pk=account.id)
         except Account.DoesNotExist:
             return render(request, 'tapasapp/login_page.html', {'error': 'Invalid login'})
     
@@ -23,6 +19,8 @@ def login_page(request):
     return render(request, 'tapasapp/login_page.html', {'success': success})
     
 def basic_list(request, pk):
+    if 'user_id' not in request.session or request.session['user_id'] != pk:
+        return redirect('login_page')
     user = get_object_or_404(Account, pk=pk)
     dishes = Dish.objects.all()
     return render(request, 'tapasapp/basic_list.html', {'dishes': dishes, 'user_obj': user})
@@ -94,7 +92,7 @@ def add_menu(request):
         preptime = request.POST.get('ptime')
         Dish.objects.create(name=dishname, cook_time=cooktime, prep_time=preptime)
         user_id = request.session.get('user_id')
-        return redirect('better_menu')
+        return redirect('basic_list', pk=user_id)
     else:
         return render(request, 'tapasapp/add_menu.html')
 
@@ -104,8 +102,8 @@ def view_detail(request, pk):
 
 def delete_dish(request, pk):
     Dish.objects.filter(pk=pk).delete()
-    user_if = request.session.get('user_id')
-    return redirect('better_menu')
+    user_id = request.session.get('user_id')
+    return redirect('basic_list', pk=user_id)
 
 def update_dish(request, pk):
     if(request.method=="POST"):
